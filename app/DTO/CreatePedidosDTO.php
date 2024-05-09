@@ -22,7 +22,8 @@ class CreatePedidosDTO
     public static function makeFromRequest(StoreUpdatePedidos $request): self
     {
         $date = str_replace('/', '-', $request->data);
-        $valor = str_replace(',', '.', $request->valor);
+        $valor = str_replace('.', '', $request->valor);
+        $valor = str_replace(',', '.', $valor);
 
         return new self(
             $request->produto,

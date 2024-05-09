@@ -137,38 +137,40 @@ class PedidosController extends Controller
     public function update(StoreUpdatePedidos $request, Pedidos $pedido, string|int $id)
     {
 
-        $request->validate([
-            'imagem' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        $filenamewithextension = $request->file('imagem')->getClientOriginalName();
-
-        $filename = pathinfo($filenamewithextension, PATHINFO_FILENAME);
-
-        $extension = $request->file('imagem')->getClientOriginalExtension();
-
-        $filenametostore = $filename.'_'.time().'.'.$extension;
-
-        $smallthumbnail = $filename.'_small_'.time().'_90x100.'.$extension;
-
-        $request->file('imagem')->storeAs('public/imagens', $filenametostore);
-        $request->file('imagem')->storeAs('public/imagens/thumbnail', $smallthumbnail);
-
         $pedido = $this->service->update(
             UpdatePedidosDTO::makeFromRequest($request)
         );
 
-        DB::table('pedidos_imagens')->insert(
-            array(
-                [
-                    'pedido_id' => $pedido->id,
-                    'imagem' => $filenametostore,
-                    'capa' => $smallthumbnail,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]
-            )
-        );
+        if(isset($request->file)) {
+            $request->validate([
+                'imagem' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+
+            $filenamewithextension = $request->file('imagem')->getClientOriginalName();
+
+            $filename = pathinfo($filenamewithextension, PATHINFO_FILENAME);
+
+            $extension = $request->file('imagem')->getClientOriginalExtension();
+
+            $filenametostore = $filename . '_' . time() . '.' . $extension;
+
+            $smallthumbnail = $filename . '_small_' . time() . '_90x100.' . $extension;
+
+            $request->file('imagem')->storeAs('public/imagens', $filenametostore);
+            $request->file('imagem')->storeAs('public/imagens/thumbnail', $smallthumbnail);
+
+            DB::table('pedidos_imagens')->insert(
+                array(
+                    [
+                        'pedido_id' => $pedido->id,
+                        'imagem' => $filenametostore,
+                        'capa' => $smallthumbnail,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                )
+            );
+        }
 
         if(!$pedido) {
             return back();
