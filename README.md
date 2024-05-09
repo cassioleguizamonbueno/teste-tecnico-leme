@@ -5,7 +5,7 @@
 Clone Repositório
 ```sh
 
-git clone https://github.com/cassioleguizamonbueno/curso-de-laravel-10.git app-laravel
+git clone https://github.com/cassioleguizamonbueno/teste-tecnico-leme.git app-laravel
 ```
 ```sh
 cd app-laravel
